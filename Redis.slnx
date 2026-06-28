@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Redis.vcxproj" Id="545dca83-e349-405b-8533-4024336fa164" />
+</Solution>
