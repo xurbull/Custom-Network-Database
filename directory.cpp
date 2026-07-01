@@ -5,6 +5,7 @@
 #include <sstream>
 #include <functional>
 #include <unordered_map>
+#include <algorithm>
 
 #include "directory.hpp"
 
@@ -48,6 +49,9 @@ string Directory::execute(const vector<string>& args) {
 	if (args.empty()) return "";
 
 	string command = args[0];
+
+	transform(command.begin(), command.end(), command.begin(),
+		[](unsigned char c) { return tolower(c); });
 
 	if (commandHandlers.find(command) != commandHandlers.end()) {
 		Command cmd = commandHandlers[command];
