@@ -139,8 +139,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="localmain.cpp" />
     <ClCompile Include="directory.cpp" />
+    <ClCompile Include="servermain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directory.hpp" />
