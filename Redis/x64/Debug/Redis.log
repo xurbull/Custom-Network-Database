@@ -1,8 +1,0 @@
-﻿  directory.cpp
-C:\Users\demic\Desktop\study\proj\Redis\src\directory.cpp(182,35): warning C4101: 'e': unreferenced local variable
-  servermain.cpp
-C:\Users\demic\Desktop\study\proj\Redis\src\servermain.cpp(68,41): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\demic\Desktop\study\proj\Redis\src\servermain.cpp(96,56): warning C4267: 'argument': conversion from 'size_t' to 'ULONG', possible loss of data
-C:\Users\demic\Desktop\study\proj\Redis\src\servermain.cpp(157,75): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
-  Redis.vcxproj -> C:\Users\demic\Desktop\study\proj\Redis\x64\Debug\Redis.exe

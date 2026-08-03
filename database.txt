@@ -1,2 +1,0 @@
-name;string;Kanan
-age;int;18
