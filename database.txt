@@ -1,4 +1,2 @@
-1;string;Kanan
-2;string;Aliyev
-3;string;Aysu
-4;string;Aliyeva
+name;string;Kanan
+age;int;18

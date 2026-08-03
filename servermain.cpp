@@ -1,12 +1,8 @@
-#include <iostream>
-#include <vector>
-#include <string>
 #include <cstring>
 #include <algorithm>
 
 #include "directory.hpp" 
 
-// --- CROSS-PLATFORM SOCKET SETUP ---
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -50,7 +46,7 @@ int main() {
     // setup the listening socket
     struct addrinfo hints, * ai;
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 

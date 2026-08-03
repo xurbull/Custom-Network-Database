@@ -1,2 +1,5 @@
-﻿  directory.cpp
+﻿  servermain.cpp
+C:\Users\demic\Desktop\study\proj\Redis\servermain.cpp(72,41): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\demic\Desktop\study\proj\Redis\servermain.cpp(100,56): warning C4267: 'argument': conversion from 'size_t' to 'ULONG', possible loss of data
+C:\Users\demic\Desktop\study\proj\Redis\servermain.cpp(161,75): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Redis.vcxproj -> C:\Users\demic\Desktop\study\proj\Redis\x64\Debug\Redis.exe
