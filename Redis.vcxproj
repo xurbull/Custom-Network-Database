@@ -139,18 +139,18 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="localmain.cpp" />
-    <ClCompile Include="directory.cpp" />
-    <ClCompile Include="servermain.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="directory.hpp" />
+    <ClInclude Include="src\directory.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\directory.cpp" />
+    <ClCompile Include="src\servermain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
