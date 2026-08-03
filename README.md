@@ -7,10 +7,10 @@ A simple networked key-value database written n C++.
 ### 1. Compile and Start the Server
 **On Mac / Linux:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git clone https://github.com/xurbull/Custom-Network-Database.git
 ```
 ```bash
-cd YOUR_REPO_NAME
+cd Custom-Network-Database
 ```
 ```bash
 g++ -std=c++17 servermain.cpp directory.cpp -o server
