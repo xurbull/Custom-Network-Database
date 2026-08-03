@@ -1,7 +1,6 @@
 # Custom In-Memory Network Database
 
 A simple networked key-value database written n C++. 
-This project was built to explore low-level OS networking, memory management, and database architecture.
 
 ## How to Run It
 
@@ -9,23 +8,27 @@ This project was built to explore low-level OS networking, memory management, an
 **On Mac / Linux:**
 ```bash
 git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+```
+```bash
 cd YOUR_REPO_NAME
+```
+```bash
 g++ -std=c++17 servermain.cpp directory.cpp -o server
+```
+```bash
 ./server
 ```
 
 **On Windows:**
-Simply open the folder in Visual Studio, ensure the ws2_32.lib pragma is active in servermain.cpp, and click "Build and Run".
+Open the folder in Visual Studio, and run it.
 
 ### 2. Connect to the Database
-Once the server says Listening on port 8080..., open a second terminal window and connect using Netcat (Mac/Linux) or Telnet (Windows):
-code
+Once the server starts listening, open a second terminal window and connect:
 ```bash
 nc 127.0.0.1 8080
 ```
 
-### 3. Try these Commands!
-Commands:
+### 3. Commands:
 SET	
 GET	
 INCR	
