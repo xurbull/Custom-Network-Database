@@ -7,7 +7,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#pragma comment(lib, "ws2_32.lib") // tell Visual Studio to link the network library
+#pragma comment(lib, "ws2_32.lib")
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -17,13 +17,11 @@
 #include <unistd.h>
 #include <poll.h>
 
-// create Windows-like macros so Linux code looks identical
 #define SOCKET int
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define closesocket close
 #endif
-// -----------------------------------
 
 using namespace std;
 
@@ -33,8 +31,8 @@ using namespace std;
 int main() {
     Directory myDatabase;
     Parser myParser;
+    unordered_map<int, string> client_buffers;
 
-    // Windows specific network startup (Ignored on Linux)
 #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -69,7 +67,7 @@ int main() {
         cerr << "bind failed.\n";
         return 1;
     }
-	freeaddrinfo(ai); // delete redundant address info
+	freeaddrinfo(ai);
 
     if (listen(listener, 10) == SOCKET_ERROR) {
         cerr << "listen failed.\n";
@@ -79,19 +77,17 @@ int main() {
     cout << "Server is running! Listening on port " << PORT << "...\n";
 
     // setup poll() 
-    // This vector tracks ALL connected clients.
     vector<struct pollfd> pfds;
 
-    // Add the listener socket to our poll array first
+	// add the listener to the pollfd vector
     struct pollfd pfd;
     pfd.fd = listener;
-    pfd.events = POLLIN; // We want to know when it is ready to READ (new connection)
+    pfd.events = POLLIN;
     pfds.push_back(pfd);
 
 	// main server loop
     while (true) {
 
-        // poll() pauses the program until AT LEAST ONE socket has data ready
 #ifdef _WIN32
         int poll_count = WSAPoll(pfds.data(), pfds.size(), -1);
 #else
@@ -118,7 +114,7 @@ int main() {
                         cerr << "accept failed.\n";
                     }
                     else {
-                        // Add the new client to our poll array
+                        // Add the new client
                         struct pollfd new_pfd;
                         new_pfd.fd = newfd;
                         new_pfd.events = POLLIN;
@@ -130,34 +126,45 @@ int main() {
                 else {
                     char buffer[MAX_BUFFER];
                     memset(buffer, 0, MAX_BUFFER);
-                    int bytes_received = recv(pfds[i].fd, buffer, MAX_BUFFER - 1, 0);
+                    int bytes_recv = recv(pfds[i].fd, buffer, MAX_BUFFER - 1, 0);
 
                     // client disconnected or error
-                    if (bytes_received <= 0) {
+                    if (bytes_recv <= 0) {
                         cout << "Client disconnected. Socket ID: " << pfds[i].fd << "\n";
                         closesocket(pfds[i].fd);
+
+                        client_buffers.erase(pfds[i].fd);
 
                         pfds.erase(pfds.begin() + i);
                         i--;
                     }
                     // received a command!
                     else {
-						// bytes to string
-                        string network_input(buffer);
+                        client_buffers[pfds[i].fd] += buffer;
 
-                        // parse
-                        vector<string> args = myParser.parse(network_input);
+                        size_t pos;
+						// loop to process all complete commands in the buffer
+                        while ((pos = client_buffers[pfds[i].fd].find('\n')) != string::npos) {
 
-                        if (!args.empty()) {
-                            // execute
-                            string result = myDatabase.execute(args);
+                            string complete_command = client_buffers[pfds[i].fd].substr(0, pos);
 
-                            // send back the res
-                            result += "\n"; // Add a newline so their terminal looks nice
-                            send(pfds[i].fd, result.c_str(), result.length(), 0);
+                            client_buffers[pfds[i].fd].erase(0, pos + 1);
+
+                            if (!complete_command.empty() && complete_command.back() == '\r') {
+                                complete_command.pop_back();
+                            }
+
+                            vector<string> args = myParser.parse(complete_command);
+
+                            if (!args.empty()) {
+                                string result = myDatabase.execute(args);
+
+                                result += "\r\n";
+                                send(pfds[i].fd, result.c_str(), result.length(), 0);
+                            }
+
+                            myDatabase.debugPrint();
                         }
-
-                        myDatabase.debugPrint(); // debug print to server
                     }
                 }
             } // pollin

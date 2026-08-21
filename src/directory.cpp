@@ -2,14 +2,6 @@
 #include <fstream>
 #include <cctype>
 
-// add Composition / Flyweight Pattern (spcPlanetSpec)
-
-// add template
-
-// add a change if the person wants to check the value type in set or when using it
-
-// might change to <variant>
-
 #include "directory.hpp"
 
 #ifdef _WIN32
@@ -37,10 +29,6 @@ string Directory::handleSet(const vector<string>& args) {
 	return "OK";
 }
 
-/*string Directory::handleLPush(const vector<string>& args) {
-	// write the list push logic here
-}*/
-
 // get logic
 string Directory::handleGet(const vector<string>& args) {
 	if (database.find(args.at(1)) != database.end()) {
@@ -65,6 +53,40 @@ string Directory::handleCopy(const vector<string>& args) {
 	}
 	return "Key not found";
 }
+
+// list push logic
+string Directory::handleLPush(const vector<string>& args) {
+	string key = args.at(1);
+	string val = args.at(2);
+
+	auto it = database.find(key);
+
+	if (it == database.end()) {
+		auto new_list = make_shared<listVal>();
+		new_list->lpush(val);
+		database[key] = new_list;
+		return "OK";
+	}
+
+	if (auto list_ptr = dynamic_cast<listVal*>(it->second.get())) {
+		list_ptr->lpush(val);
+		return "OK";
+	}
+
+	return "WRONGTYPE Operation against a key holding the wrong kind of value";
+}
+
+// list range logic
+string Directory::handleLRange(const vector<string>& args) {
+	auto it = database.find(args.at(1));
+	if (it == database.end()) return "(empty list)";
+
+	if (auto list_ptr = dynamic_cast<listVal*>(it->second.get())) {
+		return list_ptr->print();
+	}
+	return "WRONGTYPE Operation against a key holding the wrong kind of value";
+}
+
 // increment logic, the int goes as string 
 string Directory::handleIncr(const vector<string>& args) {
 	
@@ -88,7 +110,6 @@ string Directory::handleIncr(const vector<string>& args) {
 		if (is_number(org_str)) {
 			int new_val = stoi(org_str) + 1;
 
-			// morphing
 			database[key] = make_shared<intVal>(new_val);
 			return to_string(new_val);
 		}
@@ -103,14 +124,13 @@ string Directory::handleExit(const vector<string>& args) {
 }
 
 // persistence handlers
-
+// 
 // save logic
 string Directory::handleSave(const vector<string>& args) {
 	ofstream os("database.txt");
 	if (!os) return "Error: Could not open file";
 
 	for (const auto& [key, db_val] : database) {
-		// Formatted like your CSV: key;type;value
 		os << key << ";" << db_val->get_type() << ";";
 		db_val->send_to(os);
 		os << "\n";
@@ -123,7 +143,7 @@ string Directory::handleLoad(const vector<string>& args) {
 	ifstream is("database.txt");
 	if (!is) return "Error: Could not open file";
 
-	database.clear(); // Clear current RAM
+	database.clear(); 
 	string line;
 
 	while (getline(is, line)) {
@@ -131,7 +151,6 @@ string Directory::handleLoad(const vector<string>& args) {
 		istringstream ss(line);
 		string key, type, value;
 
-		// Splitting using the ';' delimiter
 		getline(ss, key, ';');
 		getline(ss, type, ';');
 		getline(ss, value);
@@ -141,6 +160,15 @@ string Directory::handleLoad(const vector<string>& args) {
 		}
 		else if (type == "int") {
 			database[key] = make_shared<intVal>(stoi(value));
+		}
+		else if (type == "list") {
+			auto new_list = make_shared<listVal>();
+			istringstream list_stream(value);
+			string item;
+			while (getline(list_stream, item, ',')) {
+				new_list->rpush(item);
+			}
+			database[key] = new_list;
 		}
 	}
 	return "Database Loaded from Disk!";
@@ -153,6 +181,8 @@ Directory::Directory() {
 	commandHandlers["del"] = { 2, [this](const vector<string>& args) { return handleDel(args); } };
 	commandHandlers["incr"] = { 2, [this](const vector<string>& args) { return handleIncr(args); } };
 	commandHandlers["copy"] = { 3, [this](const vector<string>& args) { return handleCopy(args); } };
+	commandHandlers["lpush"] = { 3, [this](const vector<string>& args) { return handleLPush(args); } };
+	commandHandlers["lrange"] = { 2, [this](const vector<string>& args) { return handleLRange(args); } };
 	commandHandlers["exit"] = { 1, [this](const vector<string>& args) { return handleExit(args); } };
 	commandHandlers["save"] = { 1, [this](const vector<string>& args) { return handleSave(args); } };
 	commandHandlers["load"] = { 1, [this](const vector<string>& args) { return handleLoad(args); } };
@@ -165,7 +195,6 @@ string Directory::execute(const vector<string>& args) {
 
 	string command = args[0];
 
-	// normalize to lowercase for case-insensitive matching
 	transform(command.begin(), command.end(), command.begin(),
 		[](unsigned char c) { return std::tolower(c); });
 
@@ -197,7 +226,7 @@ void Directory::debugPrint() {
 	}
 }
 
-// Parser function
+// parsing the input
 vector<string> Parser::parse(const string& input) {
 	istringstream ss(input);
 	vector<string> args;
