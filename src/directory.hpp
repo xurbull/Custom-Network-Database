@@ -94,6 +94,7 @@ private:
 
     std::string handleSave(const std::vector<std::string>& args);
     std::string handleLoad(const std::vector<std::string>& args);
+    std::string handleClear(const std::vector<std::string>& args);
     std::string handleExit(const std::vector<std::string>& args);
 public:
     Directory();

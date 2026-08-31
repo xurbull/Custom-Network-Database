@@ -117,6 +117,11 @@ string Directory::handleIncr(const vector<string>& args) {
 	return "WRONGTYPE Operation against a key holding the wrong kind of value";
 }
 
+string Directory::handleClear(const std::vector<std::string>& args) {
+	database.clear();
+	return "OK";
+}
+
 // exit logic
 string Directory::handleExit(const vector<string>& args) {
 	exit(0);
@@ -186,6 +191,7 @@ Directory::Directory() {
 	commandHandlers["exit"] = { 1, [this](const vector<string>& args) { return handleExit(args); } };
 	commandHandlers["save"] = { 1, [this](const vector<string>& args) { return handleSave(args); } };
 	commandHandlers["load"] = { 1, [this](const vector<string>& args) { return handleLoad(args); } };
+	commandHandlers["clear"] = { 1, [this](const vector<string>& args) { return handleClear(args); } };
 }
 
 
